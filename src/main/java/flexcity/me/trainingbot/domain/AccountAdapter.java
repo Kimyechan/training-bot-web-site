@@ -5,6 +5,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -16,9 +17,9 @@ public class AccountAdapter extends User {
         super(account.getUserId(), account.getPassword(), authorities(account.getRoles()));
     }
 
-    private static Collection<? extends GrantedAuthority> authorities(Set<AccountRole> roles){
+    private static Collection<? extends GrantedAuthority> authorities(List<String> roles) {
         return roles.stream()
-                .map(r -> new SimpleGrantedAuthority("ROLES_" + r.name() ))
+                .map(r -> new SimpleGrantedAuthority("ROLES_" + r))
                 .collect(Collectors.toSet());
     }
 }
