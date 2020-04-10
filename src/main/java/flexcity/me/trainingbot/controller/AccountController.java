@@ -1,8 +1,11 @@
 package flexcity.me.trainingbot.controller;
 
+import flexcity.me.trainingbot.advice.exception.CUserNotFoundException;
 import flexcity.me.trainingbot.configs.JwtTokenProvider;
 import flexcity.me.trainingbot.domain.Account;
+import flexcity.me.trainingbot.model.reponse.SingleResult;
 import flexcity.me.trainingbot.service.AccountService;
+import flexcity.me.trainingbot.service.ResponseService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -31,9 +34,13 @@ public class AccountController {
     @Autowired
     JwtTokenProvider jwtTokenProvider;
 
+    @Autowired
+    ResponseService responseService;
+
+
     @ApiOperation(value = "회원 가입", notes = "회원을 가입을 한다.")
     @PostMapping("/signup")
-    public ResponseEntity<CreateAccountResponse> signup(@ApiParam(value="회원가입 정보", required=true) @RequestBody @Valid CreateAccountRequest request) {
+    public ResponseEntity<SingleResult<CreateAccountResponse>> signup(@ApiParam(value="회원가입 정보", required=true) @RequestBody @Valid CreateAccountRequest request) {
         Account saveAccount = accountService.saveAccount(
                 Account.builder()
                         .userId(request.userId)
@@ -42,20 +49,20 @@ public class AccountController {
                         .roles(Collections.singletonList("ROLE_USER"))
                         .build());
 
-        return new ResponseEntity<>(new CreateAccountResponse(saveAccount.getUserId()), HttpStatus.CREATED);
+        return new ResponseEntity<>(responseService.getSingleResult(new CreateAccountResponse(saveAccount.getUserId())), HttpStatus.CREATED);
     }
 
     @ApiOperation(value = "로그인", notes = "로그인을 한다.")
     @PostMapping("/signin")
-    public ResponseEntity<?> signin(@ApiParam(value="로그인 정보", required=true) @RequestBody @Valid LoginRequest request) {
-        Optional<Account> account = accountService.findOne(request.getUserId());
-        Account loginAccount = account.get();
+    public ResponseEntity<?> signin(@ApiParam(value="로그인 정보", required=true) @RequestBody @Valid LoginRequest request,
+                                    @ApiParam(value = "언어", defaultValue = "ko") @RequestParam String lang){
+        Account account = accountService.findOne(request.getUserId()).orElseThrow(CUserNotFoundException::new);
 
-        if(!passwordEncoder.matches(request.getPassword(), loginAccount.getPassword())){
+        if(!passwordEncoder.matches(request.getPassword(), account.getPassword())){
             ResponseEntity.badRequest();
         }
 
-        return ResponseEntity.ok(jwtTokenProvider.createToken(String.valueOf(loginAccount.getId()), loginAccount.getRoles()));
+        return ResponseEntity.ok(responseService.getSingleResult(jwtTokenProvider.createToken(String.valueOf(account.getId()), account.getRoles())));
     }
 
     @Data
