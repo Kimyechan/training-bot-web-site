@@ -1,5 +1,6 @@
 package flexcity.me.trainingbot.controller;
 
+import flexcity.me.trainingbot.advice.exception.CEmailSigninFailedException;
 import flexcity.me.trainingbot.advice.exception.CUserNotFoundException;
 import flexcity.me.trainingbot.configs.JwtTokenProvider;
 import flexcity.me.trainingbot.domain.Account;
@@ -13,12 +14,18 @@ import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
+import javax.swing.text.html.Option;
 import javax.validation.Valid;
 import java.util.Collections;
-import java.util.Optional;
 
 @Api(tags = {"1. User"})
 @RestController
@@ -37,6 +44,8 @@ public class AccountController {
     @Autowired
     ResponseService responseService;
 
+    @Autowired
+    AuthenticationManager authenticationManager;
 
     @ApiOperation(value = "회원 가입", notes = "회원을 가입을 한다.")
     @PostMapping("/signup")
@@ -54,15 +63,14 @@ public class AccountController {
 
     @ApiOperation(value = "로그인", notes = "로그인을 한다.")
     @PostMapping("/signin")
-    public ResponseEntity<?> signin(@ApiParam(value="로그인 정보", required=true) @RequestBody @Valid LoginRequest request,
-                                    @ApiParam(value = "언어", defaultValue = "ko") @RequestParam String lang){
-        Account account = accountService.findOne(request.getUserId()).orElseThrow(CUserNotFoundException::new);
+    public ResponseEntity<?> signin(@ApiParam(value="로그인 정보", required=true) @RequestBody @Valid LoginRequest request){
+         Account account = accountService.findOne(request.getUserId()).orElseThrow(CUserNotFoundException::new);
 
-        if(!passwordEncoder.matches(request.getPassword(), account.getPassword())){
-            ResponseEntity.badRequest();
-        }
+        if(!passwordEncoder.matches(request.getPassword(), account.getPassword()))
+            throw new CEmailSigninFailedException();
 
-        return ResponseEntity.ok(responseService.getSingleResult(jwtTokenProvider.createToken(String.valueOf(account.getId()), account.getRoles())));
+//        return ResponseEntity.ok(responseService.getSingleResult(jwtTokenProvider.createToken(String.valueOf(account.getId()), account.getRoles())));
+        return ResponseEntity.ok(jwtTokenProvider.createToken(String.valueOf(account.getId()), account.getRoles()));
     }
 
     @Data
@@ -86,12 +94,5 @@ public class AccountController {
     static class LoginRequest {
         private String userId;
         private String password;
-    }
-
-    @Data
-    static class LoginResponse {
-        private  String userId;
-
-        public LoginResponse(String userId) { this.userId = userId;}
     }
 }
