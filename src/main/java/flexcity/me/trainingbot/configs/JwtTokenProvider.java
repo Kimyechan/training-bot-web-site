@@ -1,5 +1,6 @@
 package flexcity.me.trainingbot.configs;
 
+import flexcity.me.trainingbot.service.AccountService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
@@ -28,6 +29,8 @@ public class JwtTokenProvider {
     private long tokenValidMilisecond = 1000L * 60 * 60;
 
     private final UserDetailsService userDetailsService;
+
+    private final AccountService accountService;
 
     @PostConstruct
     protected void init() {
@@ -59,8 +62,8 @@ public class JwtTokenProvider {
         return req.getHeader("X-AUTH-TOKEN");
     }
 
-    public boolean validateToken(String jwtToken){
-        try{
+    public boolean validateToken(String jwtToken) {
+        try {
             Jws<Claims> claims = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(jwtToken);
             return !claims.getBody().getExpiration().before(new Date());
         } catch (Exception e) {

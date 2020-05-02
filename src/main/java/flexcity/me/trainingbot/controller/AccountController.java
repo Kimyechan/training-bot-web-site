@@ -5,6 +5,7 @@ import flexcity.me.trainingbot.advice.exception.CUserNotFoundException;
 import flexcity.me.trainingbot.configs.JwtTokenProvider;
 import flexcity.me.trainingbot.domain.Account;
 import flexcity.me.trainingbot.model.reponse.SingleResult;
+import flexcity.me.trainingbot.repository.AccountRepository;
 import flexcity.me.trainingbot.service.AccountService;
 import flexcity.me.trainingbot.service.ResponseService;
 import io.swagger.annotations.Api;
@@ -36,6 +37,9 @@ public class AccountController {
     AccountService accountService;
 
     @Autowired
+    AccountRepository accountRepository;
+
+    @Autowired
     PasswordEncoder passwordEncoder;
 
     @Autowired
@@ -49,7 +53,7 @@ public class AccountController {
 
     @ApiOperation(value = "회원 가입", notes = "회원을 가입을 한다.")
     @PostMapping("/signup")
-    public ResponseEntity<SingleResult<CreateAccountResponse>> signup(@ApiParam(value="회원가입 정보", required=true) @RequestBody @Valid CreateAccountRequest request) {
+    public ResponseEntity<SingleResult<CreateAccountResponse>> signup(@ApiParam(value = "회원가입 정보", required = true) @RequestBody @Valid CreateAccountRequest request) {
         Account saveAccount = accountService.saveAccount(
                 Account.builder()
                         .userId(request.userId)
@@ -63,10 +67,9 @@ public class AccountController {
 
     @ApiOperation(value = "로그인", notes = "로그인을 한다.")
     @PostMapping("/signin")
-    public ResponseEntity<?> signin(@ApiParam(value="로그인 정보", required=true) @RequestBody @Valid LoginRequest request){
-         Account account = accountService.findOne(request.getUserId()).orElseThrow(CUserNotFoundException::new);
-
-        if(!passwordEncoder.matches(request.getPassword(), account.getPassword()))
+    public ResponseEntity<?> signin(@ApiParam(value = "로그인 정보", required = true) @RequestBody @Valid LoginRequest request) {
+        Account account = accountService.findOne(request.getUserId()).orElseThrow(CUserNotFoundException::new);
+        if (!passwordEncoder.matches(request.getPassword(), account.getPassword()))
             throw new CEmailSigninFailedException();
 
 //        return ResponseEntity.ok(responseService.getSingleResult(jwtTokenProvider.createToken(String.valueOf(account.getId()), account.getRoles())));
@@ -85,7 +88,7 @@ public class AccountController {
     static class CreateAccountResponse {
         private String userId;
 
-        public CreateAccountResponse(String userId){
+        public CreateAccountResponse(String userId) {
             this.userId = userId;
         }
     }
@@ -95,4 +98,5 @@ public class AccountController {
         private String userId;
         private String password;
     }
+
 }

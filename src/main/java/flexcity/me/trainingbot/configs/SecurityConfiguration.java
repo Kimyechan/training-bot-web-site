@@ -32,9 +32,9 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                     .authorizeRequests()
-                        .antMatchers("/api/signin", "/api/signup").permitAll()
-                        .antMatchers(HttpMethod.GET, "helloworld/**").permitAll()
-                        .anyRequest().hasRole("USER")
+                        .antMatchers("/*/signin", "/*/signup").permitAll()
+//                        .anyRequest().hasRole("USER")
+                        .anyRequest().authenticated()
                 .and()
                     .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class);
     }
