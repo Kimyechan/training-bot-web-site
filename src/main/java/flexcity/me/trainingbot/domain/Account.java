@@ -71,4 +71,22 @@ public class Account implements UserDetails {
         return false;
     }
 }
-
+//public class Account {
+//    @Id
+//    @GeneratedValue(strategy = GenerationType.IDENTITY)
+//    private Long id;
+//
+//    @Column(nullable = false, unique = true, length = 30)
+//    private String userId;
+//
+//    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+//    @Column(nullable = false, length = 100)
+//    private String password;
+//
+//    @Column(nullable = false, length = 100)
+//    private String name;
+//
+//    @ElementCollection(fetch = FetchType.EAGER)
+//    @Builder.Default
+//    private List<String> roles = new ArrayList<>();
+//}
