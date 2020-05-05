@@ -33,18 +33,18 @@ public class UserController {
     })
     @ApiOperation(value="회원 정보", notes="회원 정보를 조회한다")
     @GetMapping("/user/me")
-//    public SingleResult<UserInfoResponse> currentUserInfo(@CurrentUser Account account){
-//        UserInfoResponse userInfo = new UserInfoResponse();
-//        userInfo.setUserId(account.getUserId());
-//        userInfo.setPasssword(account.getPassword());
-//
-//        return  responseService.getSingleResult(userInfo);
-//    }
-    public SingleResult<UserInfoResponse> currentUserInfo() {
+    public SingleResult<UserInfoResponse> currentUserInfo(@CurrentUser Account currentUser){
         UserInfoResponse userInfo = new UserInfoResponse();
+        userInfo.setUserId(currentUser.getUserId());
+        userInfo.setPasssword(currentUser.getPassword());
 
-        return responseService.getSingleResult(userInfo);
+        return  responseService.getSingleResult(userInfo);
     }
+//    public SingleResult<UserInfoResponse> currentUserInfo() {
+//        UserInfoResponse userInfo = new UserInfoResponse();
+//
+//        return responseService.getSingleResult(userInfo);
+//    }
 
     @Data
     private class UserInfoResponse {
@@ -57,7 +57,7 @@ public class UserController {
     })
     @ApiOperation(value = "회원 단건 조회", notes = "회원번호(msrl)로 회원을 조회한다")
     @GetMapping(value = "/user")
-    public SingleResult<Account> findUserById(@ApiParam(value = "언어", defaultValue = "ko") @RequestParam String lang) {
+    public SingleResult<Account> findUserById() {
         // SecurityContext에서 인증받은 회원의 정보를 얻어온다.
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String id = authentication.getName();

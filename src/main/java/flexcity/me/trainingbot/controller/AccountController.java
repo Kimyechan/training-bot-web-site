@@ -72,8 +72,20 @@ public class AccountController {
         if (!passwordEncoder.matches(request.getPassword(), account.getPassword()))
             throw new CEmailSigninFailedException();
 
+        String token = jwtTokenProvider.createToken(String.valueOf(account.getId()), account.getRoles());
 //        return ResponseEntity.ok(responseService.getSingleResult(jwtTokenProvider.createToken(String.valueOf(account.getId()), account.getRoles())));
-        return ResponseEntity.ok(jwtTokenProvider.createToken(String.valueOf(account.getId()), account.getRoles()));
+//        return ResponseEntity.ok(jwtTokenProvider.createToken(String.valueOf(account.getId()), account.getRoles()));
+        return ResponseEntity.ok(new JwtAuthenticationResponse(token));
+    }
+
+    @Data
+    public class JwtAuthenticationResponse {
+        private String accessToken;
+        private String tokenType = "Bearer";
+
+        public JwtAuthenticationResponse(String accessToken) {
+            this.accessToken = accessToken;
+        }
     }
 
     @Data

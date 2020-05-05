@@ -11,6 +11,7 @@ public class AccountAdapter extends User {
 
     public AccountAdapter(Account account) {
         super(account.getUserId(), account.getPassword(), account.getAuthorities());
+        this.account = account;
     }
 //    public AccountAdapter(Account account) {
 //        super(account.getUserId(), account.getPassword(), List.of(new SimpleGrantedAuthority("ROLE_" +account.getRoles())));
