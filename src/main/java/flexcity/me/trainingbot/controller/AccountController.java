@@ -28,7 +28,7 @@ import javax.swing.text.html.Option;
 import javax.validation.Valid;
 import java.util.Collections;
 
-@Api(tags = {"1. User"})
+@Api(tags = {"1. Account"})
 @RestController
 @RequestMapping("/api")
 public class AccountController {
