@@ -35,8 +35,8 @@ public class ExerciseController {
             @ApiImplicitParam(name = "Authorization", value = "로그인 성공 후 access_token", required = false, dataType = "String", paramType = "header")
     })
     @ApiOperation(value = "운동 데이터 저장", notes = "현재 로그인한 대상에 대해서 데이터를 저장한다")
-    @PostMapping("/exercise/{kind}")
-    public ResponseExercise createExerciseData(@PathVariable("kind") String kind, @RequestBody String count) {
+    @PostMapping("/saveExercise")
+    public ResponseExercise createExerciseData(@RequestBody RequestExercise requestExercise) {
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         ResponseExercise responseExercise = new ResponseExercise();
@@ -47,8 +47,8 @@ public class ExerciseController {
 
         Exercise exercise = exerciseRepository.save(
                 Exercise.builder()
-                        .kind(kind)
-                        .count(Long.valueOf(count))
+                        .kind(requestExercise.getKind())
+                        .count(requestExercise.getCount())
                         .date(new Date())
                         .account(account)
                         .build()
@@ -59,6 +59,11 @@ public class ExerciseController {
         return responseExercise;
     }
 
+    @Data
+    static class RequestExercise{
+        private Long count;
+        private String kind;
+    }
     @Data
     static class ResponseExercise {
         private Long exerciseId;
