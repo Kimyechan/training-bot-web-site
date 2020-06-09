@@ -23,6 +23,8 @@ public class Exercise {
 
     private Date date;
 
+    private Long purposeCount;
+
     private Long count;
 
     @JsonIgnore
