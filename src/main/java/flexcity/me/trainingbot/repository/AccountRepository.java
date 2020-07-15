@@ -10,6 +10,6 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
 
     Optional<Account> findByUserId(String userId);
 
-    @Query(value = "select a from Account a join fetch a.exercises where a.userId = ?1")
+    @Query(value = "select a from Account a join fetch a.exercises e where a.userId = ?1")
     Optional<Account> findByUserIdForExercise(String userId);
 }

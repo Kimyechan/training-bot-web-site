@@ -26,7 +26,9 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.swing.text.html.Option;
 import javax.validation.Valid;
+import javax.validation.constraints.Null;
 import java.util.Collections;
+import java.util.Optional;
 
 @Api(tags = {"1. Account"})
 @RestController
@@ -68,13 +70,20 @@ public class AccountController {
     @ApiOperation(value = "로그인", notes = "로그인을 한다.")
     @PostMapping("/signin")
     public ResponseEntity<?> signin(@ApiParam(value = "로그인 정보", required = true) @RequestBody @Valid LoginRequest request) {
-        Account account = accountService.findOne(request.getUserId()).orElseThrow(CUserNotFoundException::new);
-        if (!passwordEncoder.matches(request.getPassword(), account.getPassword()))
-            throw new CEmailSigninFailedException();
+//        Account account = accountService.findOne(request.getUserId()).orElseThrow(CUserNotFoundException::new);
+        Optional<Account> accountTemp = accountService.findOne(request.getUserId());
+        Account account;
+
+        if(accountTemp.isEmpty()){
+            return new ResponseEntity<String>("Unauthorized", HttpStatus.UNAUTHORIZED);
+        } else {
+            account = accountTemp.get();
+            if (!passwordEncoder.matches(request.getPassword(), account.getPassword()))
+                return new ResponseEntity<String>("Unauthorized", HttpStatus.UNAUTHORIZED);
+        }
 
         String token = jwtTokenProvider.createToken(String.valueOf(account.getId()), account.getRoles());
-//        return ResponseEntity.ok(responseService.getSingleResult(jwtTokenProvider.createToken(String.valueOf(account.getId()), account.getRoles())));
-//        return ResponseEntity.ok(jwtTokenProvider.createToken(String.valueOf(account.getId()), account.getRoles()));
+
         return ResponseEntity.ok(new JwtAuthenticationResponse(token));
     }
 
