@@ -18,6 +18,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -56,7 +57,7 @@ public class ExerciseController {
                         .kind(requestExercise.getKind())
                         .count(requestExercise.getCount())
                         .purposeCount(requestExercise.getPurposeCount())
-                        .date(new Date())
+                        .date(LocalDate.now())
                         .account(account)
                         .build()
         );
@@ -117,7 +118,7 @@ public class ExerciseController {
     @Data
     @Builder
     static class ResponseExerciseData{
-        private Date date;
+        private LocalDate date;
         private Long purposeCount;
         private Long count;
         private String kind;

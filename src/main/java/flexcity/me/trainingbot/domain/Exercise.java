@@ -1,11 +1,11 @@
 package flexcity.me.trainingbot.domain;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 
 import javax.persistence.*;
 import java.time.LocalDate;
-import java.util.Date;
 
 @Builder
 @Entity
@@ -21,7 +21,8 @@ public class Exercise {
 
     private String kind;
 
-    private Date date;
+    @JsonFormat(shape= JsonFormat.Shape.STRING, pattern="yyyy-MM-dd", timezone="Asia/Seoul")
+    private LocalDate date;
 
     private Long purposeCount;
 
