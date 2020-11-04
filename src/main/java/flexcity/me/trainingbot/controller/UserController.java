@@ -29,18 +29,6 @@ public class UserController {
     @Autowired
     AccountRepository accountRepository;
 
-//    @ApiImplicitParams({
-//            @ApiImplicitParam(name = "Authorization", value = "로그인 성공 후 access_token", required = false, dataType = "String", paramType = "header")
-//    })
-//    @ApiOperation(value = "회원 단건 조회", notes = "회원번호(msrl)로 회원을 조회한다")
-//    @GetMapping(value = "/user")
-//    public SingleResult<Account> findUserById() {
-//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-//        String userId = authentication.getName();
-//
-//        return responseService.getSingleResult(accountRepository.findByUserId(userId).orElseThrow(CUserNotFoundException::new));
-//    }
-
     @ApiImplicitParams({
             @ApiImplicitParam(name = "Authorization", value = "로그인 성공 후 access_token", required = false, dataType = "String", paramType = "header")
     })

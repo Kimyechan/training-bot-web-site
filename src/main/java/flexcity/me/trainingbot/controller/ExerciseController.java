@@ -15,15 +15,14 @@ import lombok.Builder;
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Api(tags = {"1. Exercise"})
 @RestController
@@ -80,9 +79,9 @@ public class ExerciseController {
     @ApiImplicitParams({
             @ApiImplicitParam(name = "Authorization", value = "로그인 성공 후 access_token", required = false, dataType = "String", paramType = "header")
     })
-    @ApiOperation(value = "운동 목표 달성률", notes = "운동 목표를 달성하는 비율을 나타내기위해 데이터를 가져온다")
+    @ApiOperation(value = "월별 운동 데이터", notes = "월별 운동 데이터를 가져와서 통계를 출력한다")
     @GetMapping("/searchExerciseData")
-    public ListResult<ResponseExerciseData> exerciseData(Authentication authentication){
+    public ListResult<ResponseExerciseData> exerciseDataPerMonth(Authentication authentication, Integer year, Integer month){
         List<ResponseExerciseData> response = new ArrayList<>();
 
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
@@ -100,7 +99,11 @@ public class ExerciseController {
             exercises = accountNew.getExercises();
         }
 
-        for(Exercise exercise : exercises){
+        List<Exercise> exercisesCorrectDate = exercises.stream()
+                .filter((exercise -> (exercise.getDate().getYear() == year && exercise.getDate().getMonthValue() == month)))
+                .collect(Collectors.toList());
+
+        for(Exercise exercise : exercisesCorrectDate){
             ResponseExerciseData responseExercise = ResponseExerciseData.builder()
                     .date(exercise.getDate())
                     .purposeCount(exercise.getPurposeCount())
@@ -113,7 +116,6 @@ public class ExerciseController {
 
         return responseService.getListResult(response);
     }
-
     @Data
     @Builder
     static class ResponseExerciseData{
