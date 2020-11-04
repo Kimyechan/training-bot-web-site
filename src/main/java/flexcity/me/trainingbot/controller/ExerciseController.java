@@ -16,6 +16,7 @@ import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
@@ -43,12 +44,10 @@ public class ExerciseController {
     })
     @ApiOperation(value = "운동 데이터 저장", notes = "현재 로그인한 대상에 대해서 데이터를 저장한다")
     @PostMapping("/saveExercise")
-    public ResponseExercise createExerciseData(@RequestBody RequestExercise requestExercise) {
-
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    public ResponseExercise createExerciseData(Authentication authentication, @RequestBody RequestExercise requestExercise) {
         ResponseExercise responseExercise = new ResponseExercise();
-
-        String userId = authentication.getName();
+        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+        String userId = userDetails.getUsername();
 
         Account account = accountRepository.findByUserId(userId).orElseThrow(CUserNotFoundException::new);
 
@@ -83,11 +82,11 @@ public class ExerciseController {
     })
     @ApiOperation(value = "운동 목표 달성률", notes = "운동 목표를 달성하는 비율을 나타내기위해 데이터를 가져온다")
     @GetMapping("/searchExerciseData")
-    public ListResult<ResponseExerciseData> exerciseData(){
+    public ListResult<ResponseExerciseData> exerciseData(Authentication authentication){
         List<ResponseExerciseData> response = new ArrayList<>();
 
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String userId = authentication.getName();
+        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+        String userId = userDetails.getUsername();
 
         Optional<Account> account = accountRepository.findByUserIdForExercise(userId);
         Account accountNew;
