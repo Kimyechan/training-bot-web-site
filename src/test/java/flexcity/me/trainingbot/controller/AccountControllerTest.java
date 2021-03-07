@@ -15,23 +15,23 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@RunWith(SpringRunner.class)
-@SpringBootTest
-@AutoConfigureMockMvc
-@Transactional
-public class AccountControllerTest {
-
-    @Autowired
-    MockMvc mockMvc;
-
-    @Test
-    public void processingSignUp() throws Exception {
-        mockMvc.perform(post("/api/signUp")
-                .param("userId", "rladPcks7" )
-                .param("password", "1234")
-                .param("name", "kimyechan")
-                .param("phoneNumber", "01092551974")
-                .with(csrf()))
-                .andDo(print());
-    }
-}
+//@RunWith(SpringRunner.class)
+//@SpringBootTest
+//@AutoConfigureMockMvc
+//@Transactional
+//public class AccountControllerTest {
+//
+//    @Autowired
+//    MockMvc mockMvc;
+//
+//    @Test
+//    public void processingSignUp() throws Exception {
+//        mockMvc.perform(post("/api/signUp")
+//                .param("userId", "rladPcks7" )
+//                .param("password", "1234")
+//                .param("name", "kimyechan")
+//                .param("phoneNumber", "01092551974")
+//                .with(csrf()))
+//                .andDo(print());
+//    }
+//}
